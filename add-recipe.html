@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Recipe</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #fdf2f8, #ffe4e6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        background: #fff;
+        padding: 20px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-width: 650px;
+        width: 100%;
+        position: relative;
+      }
+
+      h1 {
+        text-align: center;
+        color: #d35400;
+        margin-bottom: 5px;
+      }
+
+      p.subtitle {
+        text-align: center;
+        color: #444;
+        margin-bottom: 25px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin: 15px 0 5px;
+        font-size: 16px;
+      }
+
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background: #d35400;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 15px;
+      }
+
+      .btn:hover {
+        background: #ac5d28;
+      }
+
+      .example {
+        font-size: 14px;
+        color: #555;
+        margin-top: -5px;
+        margin-bottom: 15px;
+      }
+
+      /* Image Upload Box */
+      .upload-box {
+        border: 2px dashed #d16f2e;
+        border-radius: 12px;
+        padding: 25px;
+        text-align: center;
+        cursor: pointer;
+        margin-top: 10px;
+        background: #fff5f5;
+        transition: 0.3s;
+      }
+
+      .upload-box:hover {
+        background: #ffe4e6;
+      }
+
+      .upload-box img {
+        max-width: 120px;
+        margin: 10px auto;
+        display: block;
+      }
+
+      #preview {
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      #preview img {
+        max-width: 200px;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 26px;
+        font-weight: bold;
+        color: #d35400;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .close-btn:hover {
+        color: #ac5d28;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>👨‍🍳 Add New Recipe 👨‍🍳</h1>
+      <p class="subtitle">
+        ✨ Share your culinary masterpiece with the world! ✨
+      </p>
+
+      <form id="recipeForm">
+        <span class="close-btn" onclick="goHome()">✖</span>
+        <!-- Recipe Name -->
+        <label for="recipeName">🥕 Recipe Name</label>
+        <input
+          type="text"
+          id="recipeName"
+          placeholder="Enter your amazing recipe name... 📖"
+          required
+        />
+
+        <!-- Ingredients -->
+        <label for="ingredients">🥗 Ingredients</label>
+        <textarea
+          id="ingredients"
+          placeholder="List all ingredients (one per line or separated by commas)... 🛒"
+          required
+        ></textarea>
+
+        <!-- Preparation Steps -->
+        <label for="steps">🍳 Preparation Steps</label>
+        <textarea
+          id="steps"
+          placeholder="Describe the preparation steps in detail... 🔥"
+          required
+        ></textarea>
+
+        <!-- Recipe Image Upload -->
+        <label for="recipeImage">📸 Recipe Image</label>
+        <div
+          class="upload-box"
+          onclick="document.getElementById('recipeImage').click()"
+        >
+          <img
+            src="https://img.icons8.com/ios/100/ff4d4d/image--v1.png"
+            alt="Upload Icon"
+          />
+          <p><b>📷 Upload Recipe Image</b></p>
+          <p>Click to select an image of your finished dish! 📖✨</p>
+          <input
+            type="file"
+            id="recipeImage"
+            accept="image/*"
+            style="display: none"
+            onchange="previewImage(event)"
+          />
+        </div>
+        <div id="preview"></div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn">➕ Add Recipe</button>
+      </form>
+    </div>
+
+    <script>
+      // Preview uploaded image
+      let uploadedImage = "";
+
+      function previewImage(event) {
+        const preview = document.getElementById("preview");
+        preview.innerHTML = ""; // Clear previous preview
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            uploadedImage = e.target.result; // Save image as Base64
+            const img = document.createElement("img");
+            img.src = uploadedImage;
+            preview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      // Handle form submission
+      document
+        .getElementById("recipeForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const name = document.getElementById("recipeName").value;
+          const ingredients = document.getElementById("ingredients").value;
+          const steps = document.getElementById("steps").value;
+
+          // Load previous recipes or empty array
+          let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+          // Get logged-in user
+          const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+          // New recipe object
+          const newRecipe = {
+            name: name,
+            ingredients: ingredients,
+            steps: steps,
+            image: uploadedImage || "https://via.placeholder.com/300",
+
+            createdBy: currentUser
+              ? currentUser.fullName || currentUser.name || "guest"
+              : "guest", // 👈 save who created it
+          };
+
+          // Save into localStorage
+          recipes.push(newRecipe);
+          localStorage.setItem("recipes", JSON.stringify(recipes));
+
+          alert("✅ Recipe Added Successfully!");
+
+          // Redirect to home page
+          window.location.href = "home.html";
+        });
+
+      function goHome() {
+        window.location.href = "home.html";
+      }
+    </script>
+  </body>
+</html>

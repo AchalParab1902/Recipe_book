@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Recipe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fffaf5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #d35400;
+      margin-bottom: 30px;
+    }
+
+    .recipe-card {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #d35400;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .close-btn:hover {
+      color: #a93226;
+    }
+
+    .recipe-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .recipe-header img {
+      /* max-width: 100%;
+      height: auto; */
+      height: 250px;
+      width: 350px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .recipe-header h2 {
+      margin-top: 15px;
+      font-size: 1.8rem;
+      color: #d35400;
+    }
+
+    .recipe-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 25px;
+    }
+
+    .ingredients, .steps {
+      background: #fff7f0;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .ingredients h3, .steps h3 {
+      color: #d35400;
+      margin-bottom: 10px;
+    }
+
+    .ingredients ul, .steps ol {
+      padding-left: 20px;
+      line-height: 1.6;
+    }
+
+    .back-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 20px;
+      background: #d35400;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      width: fit-content;
+    }
+    .back-btn:hover {
+      background: #a93226;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍲 Recipe Details</h1>
+  <div id="recipeDetail"></div>
+
+  <a href="home.html" class="back-btn">⬅ Back to Home</a>
+
+  <script>
+    function displayRecipe() {
+      const recipe = JSON.parse(localStorage.getItem("selectedRecipe"));
+      const container = document.getElementById("recipeDetail");
+      container.innerHTML = "";
+
+      if (!recipe) {
+        container.innerHTML = "<p>⚠️ No recipe selected.</p>";
+        return;
+      }
+
+     let ingredientsList = recipe.ingredients
+  .split("\n")
+  .filter(i => i.trim() !== "") 
+  .map(i => `<li>${i}</li>`)
+  .join("");
+
+let stepsList = recipe.steps
+  .split("\n")
+  .filter(s => s.trim() !== "")
+  .map(s => `<li>${s}</li>`)
+  .join("");
+
+      const recipeCard = document.createElement("div");
+      recipeCard.className = "recipe-card";
+      recipeCard.innerHTML = `
+        <span class="close-btn" onclick="goBack()">×</span>
+        <div class="recipe-header">
+          <img src="${recipe.image}" alt="${recipe.name}">
+          <h2>${recipe.name}</h2>
+          <p><i>Created by: ${recipe.createdBy || "guest"}</i></p>
+        </div>
+        <div class="recipe-content">
+          <div class="ingredients">
+            <h3>📝 Ingredients</h3>
+            <ul>${ingredientsList}</ul>
+          </div>
+          <div class="steps">
+            <h3>👨‍🍳 Preparation Steps</h3>
+            <ol>${stepsList}</ol>
+          </div>
+        </div>
+      `;
+      container.appendChild(recipeCard);
+    }
+
+    function goBack() {
+      window.location.href = "home.html";
+    }
+
+    window.onload = displayRecipe;
+  </script>
+</body>
+</html>

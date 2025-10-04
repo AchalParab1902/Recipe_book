@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Book</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #fff7f2, #fff0eb);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+    }
+
+    .logo {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .logo h1 {
+        color: #d35400;
+        font-weight: bold;
+        font-size: 28px;
+    }
+
+    .logo p {
+        color: #777;
+        margin-top: 5px;
+    }
+
+    .container {
+        background: white;
+        width: 360px;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    .tabs {
+        display: flex;
+        border-radius: 25px;
+        overflow: hidden;
+        background: #fbeee6;
+        margin-bottom: 15px;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .tab.active {
+        background: orange;
+        color: white;
+    }
+
+    h3 {
+        text-align: center;
+        color: #d35400;
+    }
+
+    p.subtitle {
+        text-align: center;
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        border: 1px solid #f4c6a6;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        padding: 8px;
+    }
+
+    .input-group input {
+        border: none;
+        outline: none;
+        flex: 1;
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    .input-group span {
+        margin-right: 8px;
+        color: #aaa;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background: orange;
+        border: none;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background: #e67e22;
+    }
+
+    .forgot {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+        color: #e67e22;
+        text-decoration: none;
+        font-size: 13px;
+    }
+
+    .small-text {
+        font-size: 12px;
+        text-align: center;
+        margin-top: 10px;
+        color: #777;
+    }
+
+    /* ✅ Styled Message Box */
+    .message {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        display: none;
+    }
+
+    .message.error {
+        background: #fdecea;
+        color: #d93025;
+        border: 1px solid #f5c2c0;
+    }
+
+    .message.success {
+        background: #e6f4ea;
+        color: #137333;
+        border: 1px solid #a8d5b9;
+    }
+</style>
+</head>
+<body>
+
+<div class="logo">
+    <h1>🍳 Recipe Book</h1>
+    <p>Your culinary adventure starts here</p>
+</div>
+
+<div class="container">
+    <div class="tabs">
+        <div id="signInTab" class="tab active" onclick="switchTab('signIn')">Sign In</div>
+        <div id="signUpTab" class="tab" onclick="switchTab('signUp')">Sign Up</div>
+    </div>
+
+    <!-- Sign In Form -->
+    <div id="signInForm">
+        <h3>Welcome Back!</h3>
+        <p class="subtitle">Sign in to access your favorite recipes</p>
+        <div class="input-group">
+            <span>📧</span>
+            <input type="email" id="loginEmail" placeholder="chef@recipebook.com">
+        </div>
+        <div class="input-group">
+            <span>🔒</span>
+            <input type="password" id="loginPassword" placeholder="Your secret ingredient">
+        </div>
+        <button onclick="login()">Start Cooking! 🍳</button>
+        <div id="feedback" class="message"></div>
+        <a href="#" class="forgot">Forgot your recipe password?</a>
+    </div>
+
+    <!-- Sign Up Form -->
+    <div id="signUpForm" style="display: none;">
+        <h3>Join Our Kitchen!</h3>
+        <p class="subtitle">Create an account to save and share your recipes</p>
+        <div class="input-group">
+            <span>👤</span>
+            <input type="text" id="fullName" placeholder="Full Name">
+        </div>
+        <div class="input-group">
+            <span>📧</span>
+            <input type="email" id="email" placeholder="chef@recipebook.com">
+        </div>
+        <div class="input-group">
+            <span>🔒</span>
+            <input type="password" id="password" placeholder="Your secret ingredient">
+        </div>
+        <div class="input-group">
+            <span>🔒</span>
+            <input type="password" id="confirmPassword" placeholder="Confirm your secret ingredient">
+        </div>
+        <button onclick="signUp()">Join the Kitchen! 👩‍🍳</button>
+        <div id="msgDisplay" class="message"></div>
+        <p class="small-text">By signing up, you agree to our delicious Terms of Service</p>
+    </div>
+</div>
+
+<p class="small-text">Ready to cook? Start exploring thousands of amazing recipes!</p>
+
+<script src="index.js"></script>
+
+</body>
+</html>

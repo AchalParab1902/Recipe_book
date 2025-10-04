@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Book</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #fdf2f8, #ffe4e6);
+      margin: 0;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e0b091;
+      padding: 12px 20px;
+      color: white;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logout-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Navigation */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #fff3e6;
+      padding: 12px;
+    }
+    .nav-links button,
+    .nav-links a {
+      border: none;
+      background: #d35400;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .nav-links button:hover,
+    .nav-links a:hover {
+      background: #a84300;
+    }
+    .search-container {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 6px;
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+    }
+    .search-container input {
+      border: none;
+      outline: none;
+      padding: 6px;
+    }
+
+    /* Recipe list */
+    #recipes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .recipe-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 320px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.recipe-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  background: #fffaf5;
+}
+
+    .recipe-card img {
+      width: 100%;
+      border-radius: 10px;
+      max-height: 180px;
+      object-fit: cover;
+    }
+    .recipe-card h3 {
+      margin: 10px 0;
+      color: #d35400;
+    }
+    .recipe-card p {
+      font-size: 14px;
+      color: #444;
+    }
+    .recipe-card button {
+      background: #d35400;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .recipe-card button:hover {
+      background: #a84300;
+    }
+    .delete-btn {
+      background: #e74c3c;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">🍲 Recipe Book</div>
+    <div>
+      <span id="welcomeUser"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="nav-links">
+    <button id="allRecipesBtn">📖 All Recipes</button>
+    <button id="myRecipesBtn">🏠 My Recipes</button>
+    <a href="add-recipe.html">➕ Add Recipe</a>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search recipes...">
+    </div>
+  </nav>
+
+  <!-- Recipes Section -->
+  <div id="recipes"></div>
+
+  <script>
+    let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
+    let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+    const recipeContainer = document.getElementById("recipes");
+    const welcomeEl = document.getElementById("welcomeUser");
+
+    if (currentUser?.fullName || currentUser?.name) {
+      welcomeEl.textContent = `👋 Welcome, ${currentUser.fullName || currentUser.name}`;
+    } else {
+      welcomeEl.textContent = "👤 Guest";
+    }
+
+
+
+    // View recipe
+    function viewRecipe(name) {
+      const recipe = recipes.find(r => r.name === name);
+      if (recipe) {
+        localStorage.setItem("selectedRecipe", JSON.stringify(recipe));
+        location.href = "view-recipe.html";
+      }
+    }
+
+    // Logout
+    function logout() {
+      localStorage.removeItem("currentUser");
+      location.href = "index.html";
+    }
+
+    // Search
+    document.getElementById("searchInput").addEventListener("input", e => {
+      const q = e.target.value.toLowerCase();
+      const filtered = recipes.filter(r => r.name.toLowerCase().includes(q) || r.ingredients?.toLowerCase().includes(q));
+      render(filtered);
+    });
+
+    // Buttons
+    document.getElementById("allRecipesBtn").addEventListener("click", () => loadRecipes("all"));
+    document.getElementById("myRecipesBtn").addEventListener("click", () => {
+      if (!currentUser) {
+        alert("Please log in first!");
+        return;
+      }
+      loadRecipes("my");
+    });
+
+    loadRecipes("all");
+
+
+    // Render recipes
+function render(list, type = "all") {
+  recipeContainer.innerHTML = "";
+  if (!list.length) {
+    recipeContainer.innerHTML = "<p>⚠️ No recipes found.</p>";
+    return;
+  }
+  list.forEach(r => {
+    const card = document.createElement("div");
+    card.className = "recipe-card";
+    card.innerHTML = `
+      <img src="${r.image}" alt="${r.name}">
+      <h3>${r.name}</h3>
+      <p>${(r.ingredients || "").slice(0,50)}...</p>
+      <button onclick="viewRecipe('${r.name}')">👀 View</button>
+      ${type === "my" ? `<button class="delete-btn" onclick="deleteRecipe('${r.name}')">❌ Delete</button>` : ""}
+    `;
+    recipeContainer.appendChild(card);
+  });
+}
+
+function loadRecipes(type = "all") {
+  recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+  if (type === "my" && currentUser) {
+    const mine = recipes.filter(r =>
+      r.createdBy?.toLowerCase() === (currentUser.fullName || currentUser.name || "").toLowerCase()
+    );
+    render(mine, "my");
+  } else {
+    render(recipes, "all");
+  }
+}
+
+// Delete recipe (only in My Recipes)
+function deleteRecipe(name) {
+  recipes = recipes.filter(r =>
+    !(r.name === name && r.createdBy?.toLowerCase() === (currentUser?.fullName || currentUser?.name || "").toLowerCase())
+  );
+  localStorage.setItem("recipes", JSON.stringify(recipes));
+  loadRecipes("my");
+}
+
+  </script>
+</body>
+</html>

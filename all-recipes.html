@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Recipes</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+  <h1>🍲 All Recipes</h1>
+  <div id="allRecipes"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const allRecipesContainer = document.getElementById("allRecipes");
+      let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+      allRecipesContainer.innerHTML = "";
+      recipes.forEach((recipe) => {
+        const card = document.createElement("div");
+        card.classList.add("recipe-card");
+
+        card.innerHTML = `
+          <img src="${recipe.image}" alt="${recipe.name}" class="recipe-img">
+          <h3>${recipe.name}</h3>
+          <p>${recipe.ingredients.substring(0, 60)}...</p>
+          <button onclick="viewRecipe('${recipe.name}')">👀 View Recipe</button>
+        `;
+        allRecipesContainer.appendChild(card);
+      });
+    });
+
+    function viewRecipe(recipeName) {
+      let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+      const selectedRecipe = recipes.find(r => r.name === recipeName);
+      if (selectedRecipe) {
+        localStorage.setItem("selectedRecipe", JSON.stringify(selectedRecipe));
+        window.location.href = "view-recipe.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
